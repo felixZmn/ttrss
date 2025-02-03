@@ -9,6 +9,7 @@ metadata:
   {{- end }}
   {{- if .Values.ingress.tls.enabled }}
     certmanager.k8s.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
   {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
@@ -19,7 +20,7 @@ spec:
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: ttrss.0x2b.de # Replace with your domain
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /
