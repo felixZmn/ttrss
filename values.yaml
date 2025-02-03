@@ -6,3 +6,11 @@ ingress:
     enabled: false
     secretName: "ttrss-tls"
     issuer: "letsencrypt-staging"
+
+db:
+  name: "ttrss"
+  username: "ttrss"
+  password: "ttrss"
+
+admin:
+  password: "admin"

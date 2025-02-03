@@ -10,4 +10,4 @@ data:
   RESOLVER: "kube-dns.kube-system.svc.cluster.local"
   TTRSS_DB_PORT: "5432"
   TTRSS_DB_HOST: {{ include "ttrss.fullname" . }}-db.{{ .Release.Namespace }}.svc.cluster.local
-  TTRSS_DB_NAME: "ttrss"
+  TTRSS_DB_NAME: {{ .Values.db.name | quote }}
