@@ -8,9 +8,11 @@ metadata:
   {{- toYaml .Values.ingress.annotations | nindent 4 }}
   {{- end }}
   {{- if .Values.ingress.tls.enabled }}
-    certmanager.k8s.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
   {{- end }}
+  labels:
+    {{- include "ttrss.labels" . | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- if .Values.ingress.tls.enabled }}
