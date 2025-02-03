@@ -1,0 +1,8 @@
+ingress:
+  host: "ttrss.example.com"
+  ingressClassName: "nginx"
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: "ttrss-tls"
+    issuer: "letsencrypt-staging"

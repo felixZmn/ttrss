@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ttrss.fullname" . }}-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web
+      {{- include "ttrss.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: web
+        {{- include "ttrss.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: web-nginx
+          image: cthulhoo/ttrss-web-nginx:latest
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "150Mi"
+              cpu: "50m"
+          envFrom:
+            - secretRef:
+                name: {{ include "ttrss.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "ttrss.fullname" . }}-config
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: app-data
+              readOnly: true
+      volumes:
+        - name: app-data
+          persistentVolumeClaim:
+            claimName: {{ include "ttrss.fullname" . }}-pvc-app

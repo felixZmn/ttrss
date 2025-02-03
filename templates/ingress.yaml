@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ttrss.fullname" . }}-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  {{- if .Values.ingress.annotations }}
+  {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+    certmanager.k8s.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: ttrss.0x2b.de # Replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ttrss.fullname" . }}-web
+                port:
+                  number: 80

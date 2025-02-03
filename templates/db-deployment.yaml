@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ttrss.fullname" . }}-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: db
+      {{- include "ttrss.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: db
+        {{- include "ttrss.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: db
+          image: postgres:15-alpine
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "150Mi"
+              cpu: "50m"
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ttrss.fullname" . }}-secrets
+                  key: TTRSS_DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ttrss.fullname" . }}-secrets
+                  key: TTRSS_DB_PASS
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ttrss.fullname" . }}-secrets
+                  key: TTRSS_DB_NAME
+            - name: foobar
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ttrss.fullname" . }}-secrets
+                  key: ADMIN_USER_PASS
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: db-data
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: {{ include "ttrss.fullname" . }}-pvc-db

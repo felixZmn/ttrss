@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ttrss.fullname" . }}-db
+spec:
+  selector:
+    app.kubernetes.io/component: db
+    {{- include "ttrss.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

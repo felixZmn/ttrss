@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ttrss.fullname" . }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: app
+      {{- include "ttrss.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: app
+        {{- include "ttrss.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: app
+          image: cthulhoo/ttrss-fpm-pgsql-static:latest
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "150Mi"
+              cpu: "50m"
+          envFrom:
+            - secretRef:
+                name: {{ include "ttrss.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "ttrss.fullname" . }}-config
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: app-data
+      volumes:
+        - name: app-data
+          persistentVolumeClaim:
+            claimName: {{ include "ttrss.fullname" . }}-pvc-app
