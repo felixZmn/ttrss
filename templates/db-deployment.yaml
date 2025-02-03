@@ -37,14 +37,9 @@ spec:
                   key: TTRSS_DB_PASS
             - name: POSTGRES_DB
               valueFrom:
-                secretKeyRef:
-                  name: {{ include "ttrss.fullname" . }}-secrets
+                configMapKeyRef:
+                  name: {{ include "ttrss.fullname" . }}-config
                   key: TTRSS_DB_NAME
-            - name: foobar
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "ttrss.fullname" . }}-secrets
-                  key: ADMIN_USER_PASS
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: db-data
